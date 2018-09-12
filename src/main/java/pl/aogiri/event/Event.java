@@ -1,45 +1,53 @@
 package pl.aogiri.event;
 
-import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.Map;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
+import org.bson.BsonBinarySubType;
+import org.bson.types.Binary;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Entity
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@Document
 public class Event {
 	
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Id
-	private long id;
+	private String id;
 	
-	@NotNull
+	
+//	@NotNull
 	private String name;
 		
-	@NotNull
+//	@NotNull
 	private double lat;
 	
-	@NotNull
+//	@NotNull
 	private double lng;
 	
-//	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "Europe/Warsaw")
-	@NotNull
-	private Timestamp dateBeg;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "Europe/Warsaw")
+//	@NotNull
+	private Instant dateBeg;
 	
-//	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "Europe/Warsaw")
-	@NotNull
-	private Timestamp dateEnd;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "Europe/Warsaw")
+//	@NotNull
+	private Instant dateEnd;
 	
-	@NotNull
-	private byte[] image;
+//	@NotNull
+	private Binary image;
+	
+	private String address;
+	
+	private int status;
 	
 	public Event() {
 	}
 
-	public Event(@NotNull long id, @NotNull String name, @NotNull double lat, @NotNull double lng, @NotNull Timestamp dateBeg,
-			@NotNull Timestamp dateEnd, @NotNull byte[] image) {
+	public Event( String id,  String name,  double lat,  double lng,  Instant dateBeg,
+			Instant dateEnd,  Binary image, String address, int status) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -48,13 +56,26 @@ public class Event {
 		this.dateBeg = dateBeg;
 		this.dateEnd = dateEnd;
 		this.image = image;
+		this.address = address;
+		this.status = status;
+		this.image = image;
 	}
 
-	public long getId() {
+	public Event(Map<String, String> body) {
+		this.name = (body.get("name"));
+		this.dateBeg = (Instant.parse(body.get("dateBeg")));
+		this.dateEnd = (Instant.parse(String.valueOf(body.get("dateEnd"))));
+		this.lat = (Double.valueOf(body.get("lat")));
+		this.lng = (Double.valueOf(body.get("lng")));
+		this.address = (String.valueOf(body.get("address")));
+		this.status = (Integer.valueOf(body.get("status")));
+	}
+
+	public String getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -82,28 +103,44 @@ public class Event {
 		this.lng = lng;
 	}
 
-	public Timestamp getDateBeg() {
+	public Instant getDateBeg() {
 		return dateBeg;
 	}
 
-	public void setDateBeg(Timestamp dateBeg) {
+	public void setDateBeg(Instant dateBeg) {
 		this.dateBeg = dateBeg;
 	}
 
-	public Timestamp getDateEnd() {
+	public Instant getDateEnd() {
 		return dateEnd;
 	}
 
-	public void setDateEnd(Timestamp dateEnd) {
+	public void setDateEnd(Instant dateEnd) {
 		this.dateEnd = dateEnd;
 	}
 
-	public byte[] getImage() {
+	public Binary getImage() {
 		return image;
 	}
 
-	public void setImage(byte[] image) {
+	public void setImage(Binary image) {
 		this.image = image;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
 	}
 	
 	

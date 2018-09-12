@@ -1,17 +1,15 @@
 package pl.aogiri.event;
 
-import java.sql.Timestamp;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface EventRepository extends CrudRepository<Event, Long> {
+public interface EventRepository extends MongoRepository<Event, String> {
 	
 	public List<Event> findAllByOrderByDateBeg();
 
-	public void saveAndFlush(Event event);
+//	public void saveAndFlush(Event event);
 	
 
 }
