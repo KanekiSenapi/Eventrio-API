@@ -58,6 +58,7 @@ public class Comment {
     }
 
     public User getCommentator() {
+        commentator.minimalize();
         return commentator;
     }
 

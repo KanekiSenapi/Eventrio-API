@@ -1,8 +1,11 @@
 package pl.aogiri.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import pl.aogiri.comment.Comment;
 import pl.aogiri.event.Event;
+import pl.aogiri.notifi.Notifi;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -16,11 +19,11 @@ public class User {
 	private Integer id;
 	
 	private String email;
-	
+
 	private String password;
 	
 	private String pseudonym;
-	
+
 	private String gender;
 	
 	private String fbid;
@@ -35,6 +38,10 @@ public class User {
 
 	@OneToOne(mappedBy = "commentator")
 	private Comment comment;
+
+	@OneToMany(mappedBy = "userNotfi")
+	private Set<Notifi> notifis;
+
 
 	public User() {
 	}
@@ -113,5 +120,36 @@ public class User {
 		this.picture = picture;
 	}
 
+	public Set<Notifi> getNotifis() {
+		return notifis;
+	}
+
+	public void setNotifis(Set<Notifi> notifis) {
+		this.notifis = notifis;
+	}
+
+	public Set<Event> getEvents() {
+		return events;
+	}
+
+	public void setEvents(Set<Event> events) {
+		this.events = events;
+	}
+
+	public void minimalize(){
+		this.birthday = null;
+		this.email = null;
+		this.events = null;
+		this.gender = null;
+		this.password = null;
+		this.gender = null;
+		this.fbid = null;
+		this.notifis = null;
+	}
+
+	public void toLogin(){
+		this.events=null;
+		this.notifis=null;
+	}
 
 }

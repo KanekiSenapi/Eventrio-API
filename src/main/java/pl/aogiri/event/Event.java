@@ -185,4 +185,14 @@ public class Event {
 		this.tags = null;
 		this.comments = null;
 	}
+
+	public void toOne(){
+		this.organizer.minimalize();
+	}
+
+	public void toUser(){
+		this.organizer = null;
+		this.comments = null;
+		this.tags = null;
+	}
 }

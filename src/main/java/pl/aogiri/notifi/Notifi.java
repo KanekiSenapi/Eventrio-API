@@ -1,9 +1,8 @@
 package pl.aogiri.notifi;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import pl.aogiri.user.User;
+
+import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
@@ -21,17 +20,18 @@ public class Notifi {
 
     private String category;
 
-    private Integer uid;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User userNotfi;
 
     public Notifi() {
     }
 
-    public Notifi(String title, Instant date, boolean showed, String category, Integer uid) {
+    public Notifi(String title, Instant date, boolean showed, String category) {
         this.title = title;
         this.date = date;
         this.showed = showed;
         this.category = category;
-        this.uid = uid;
     }
 
     public Integer getId() {
@@ -72,13 +72,5 @@ public class Notifi {
 
     public void setCategory(String category) {
         this.category = category;
-    }
-
-    public Integer getUid() {
-        return uid;
-    }
-
-    public void setUid(Integer uid) {
-        this.uid = uid;
     }
 }

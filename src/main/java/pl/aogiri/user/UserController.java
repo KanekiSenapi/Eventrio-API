@@ -28,6 +28,7 @@ public class UserController {
     @RequestMapping(path = "{id}", method = RequestMethod.GET)
     @ResponseBody private User getUser(@PathVariable Integer id, HttpServletResponse response){
         User user = userService.getUserById(id).get();
+        user.getEvents().forEach(x->x.toUser());
         if(user==null)
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         return user;
@@ -36,6 +37,7 @@ public class UserController {
     @RequestMapping(path = "fb/{fbid}", method = RequestMethod.GET)
     @ResponseBody private User getUserByFbid(@PathVariable String fbid, HttpServletResponse response){
         User user = userService.getUserByFbid(fbid);
+        user.toLogin();
         if(user==null)
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         return user;
@@ -51,5 +53,6 @@ public class UserController {
         return user;
 
     }
+
 
 }

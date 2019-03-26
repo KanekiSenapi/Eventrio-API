@@ -32,6 +32,7 @@ public class EventController {
 	@RequestMapping(method = RequestMethod.GET, path="events/{id}")
 	public @ResponseBody Event getEventById(@PathVariable Integer id, HttpServletResponse response) {
 		Event event = eventService.getEventById(id);
+		event.toOne();
 		if(event.getId()==null)
 			response.setStatus(HttpServletResponse.SC_NO_CONTENT);
 		return event;
