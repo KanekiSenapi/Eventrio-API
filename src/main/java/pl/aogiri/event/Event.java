@@ -177,4 +177,12 @@ public class Event {
 		this.comments = comments;
 	}
 
+	public void minimal(){
+		this.name = null;
+		this.address = null;
+		this.description = null;
+		this.organizer = null;
+		this.tags = null;
+		this.comments = null;
+	}
 }

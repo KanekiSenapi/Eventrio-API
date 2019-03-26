@@ -20,7 +20,9 @@ public class EventService {
 	EventRepository eventRepository;
 	
 	public List<Event> getAllEvents(){
-		return eventRepository.findAllByOrderByDateBeg();
+		List<Event> events = eventRepository.findAllByOrderByDateBeg();
+		events.forEach(x->x.minimal());
+		return events;
 	}
 
 	public Event getEventById(Integer id) {
@@ -49,28 +51,10 @@ public class EventService {
 			double lng = event.getLng();
 			Instant date_eventBeg = event.getDateBeg();
 			Instant date_eventEnd = event.getDateEnd();
-			if((lng>N && lng<S && lat>W && lat<E) & (date_eventBeg.isBefore(date_check) && date_eventEnd.isAfter(date_check)) )
+			if((lng>N && lng<S && lat>W && lat<E) & (date_eventBeg.isBefore(date_check) && date_eventEnd.isAfter(date_check)))
 				toR.add(event);
 		});
 		return toR;
-	}
-
-	public Object generateRandom() {
-//		double mina = 50.015348;
-//		double maxa = 50.109058;
-//		double minb = 19.817511;
-//		double maxb = 20.061383;
-//		long offset = Timestamp.valueOf("2018-09-07 00:00:00").getTime();
-//		long end = Timestamp.valueOf("2020-12-30 00:00:00").getTime();
-//		long diff = end - offset + 1;
-//		for (int n = 0; n < 100; n++) {
-//			Event event = new Event();
-//			event.setLat(mina + Math.random() * (maxa - mina));
-//			event.setLng(minb + Math.random() * (maxb - minb));
-//			event.setName("Test event #" + String.valueOf(n));
-////			eventRepository.save(event);
-//		}
-		return null;
 	}
 	
 	private boolean compareDates(Instant date1, Instant date2) {
