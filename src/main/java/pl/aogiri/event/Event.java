@@ -6,6 +6,7 @@ import pl.aogiri.tag.Tag;
 import pl.aogiri.user.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;

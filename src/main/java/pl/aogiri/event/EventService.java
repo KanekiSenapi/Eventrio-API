@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import pl.aogiri.results.Result;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -21,44 +23,33 @@ public class EventService {
 		return eventRepository.findAllByOrderByDateBeg();
 	}
 
-	public Event getEventById(String id) {
+	public Event getEventById(Integer id) {
 		return eventRepository.findById(id).get();
 	}
 
-	public HttpStatus addNewEvent(Map<String,String> body) {
-		Event event = new Event(body);
-		eventRepository.save(event);
-		if(event.getId() != null) 
-			return HttpStatus.CREATED;
+	public HttpStatus addNewEvent(Event body) {
+		try {
+			Event e = eventRepository.save(body);
+			if(e.getId() != null)
+				return HttpStatus.CREATED;
+		}catch (NoSuchElementException e){
+			return HttpStatus.CONFLICT;
+		}
 		return HttpStatus.CONFLICT;
 	}
 
-	public List<Event> getBoxEvents(double N, double E,double S, double W) {
+	public List<Event> getBoxEvents(double N, double S, double W, double E, String date) throws ParseException {
 		List<Event> events = this.getAllEvents();
 		List<Event> toR = new ArrayList<>();
-		events.forEach(event ->{
-			double lat = event.getLat();
-			double lng = event.getLng();
-			if(lat>S && lat<N && lng>W && lng<E)
-				toR.add(event);
-		});
-		return toR;
-	}
-	
-	public List<Event> getBoxDateEvents(double n, double e, double s, double w, String datex) {
-		List<Event> events = this.getAllEvents();
-		List<Event> toR = new ArrayList<>();
-		
-		LocalDate date2 = LocalDate.parse(datex);
-		Instant date = date2.atStartOfDay(ZoneId.of("Europe/Paris")).toInstant();
 
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Instant date_check = simpleDateFormat.parse(date).toInstant();
 		events.forEach(event ->{
 			double lat = event.getLat();
 			double lng = event.getLng();
-			Instant date_beg = event.getDateBeg();
-			Instant date_end = event.getDateEnd();
-			
-			if(lat>s && lat<n && lng>w && lng<e && ((date_beg.isBefore(date) && date_end.isAfter(date)) || compareDates(date_beg,date) || compareDates(date_end,date)))
+			Instant date_eventBeg = event.getDateBeg();
+			Instant date_eventEnd = event.getDateEnd();
+			if((lng>N && lng<S && lat>W && lat<E) & (date_eventBeg.isBefore(date_check) && date_eventEnd.isAfter(date_check)) )
 				toR.add(event);
 		});
 		return toR;
