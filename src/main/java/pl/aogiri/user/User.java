@@ -6,6 +6,7 @@ import pl.aogiri.event.Event;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.Set;
 
 @Entity
 public class User {
@@ -29,8 +30,8 @@ public class User {
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "Europe/Warsaw")
 	private Instant birthday;
 
-	@OneToOne(mappedBy = "organizer")
-	private Event event;
+	@OneToMany(mappedBy = "organizer")
+	private Set<Event> events;
 
 	@OneToOne(mappedBy = "commentator")
 	private Comment comment;
