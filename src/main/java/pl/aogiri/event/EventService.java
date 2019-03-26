@@ -1,23 +1,15 @@
 package pl.aogiri.event;
 
-import java.io.IOException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import pl.aogiri.results.Result;
+
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-
-import org.bson.BsonBinarySubType;
-import org.bson.types.Binary;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.synchronoss.cloud.nio.multipart.Multipart;
-
-import pl.aogiri.results.Result;
+import java.util.*;
 
 @Service
 public class EventService {
@@ -33,17 +25,12 @@ public class EventService {
 		return eventRepository.findById(id).get();
 	}
 
-	public Result addNewEvent(Map<String,String> body, MultipartFile image) {
+	public HttpStatus addNewEvent(Map<String,String> body) {
 		Event event = new Event(body);
-		try {
-			event.setImage(new Binary(BsonBinarySubType.BINARY, image.getBytes()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		eventRepository.save(event);
 		if(event.getId() != null) 
-			return new Result("success", String.valueOf(event.getId()));
-		return new Result("failed","");
+			return HttpStatus.CREATED;
+		return HttpStatus.CONFLICT;
 	}
 
 	public List<Event> getBoxEvents(double N, double E,double S, double W) {
@@ -61,7 +48,10 @@ public class EventService {
 	public List<Event> getBoxDateEvents(double n, double e, double s, double w, String datex) {
 		List<Event> events = this.getAllEvents();
 		List<Event> toR = new ArrayList<>();
-		Instant date = Instant.parse(datex);
+		
+		LocalDate date2 = LocalDate.parse(datex);
+		Instant date = date2.atStartOfDay(ZoneId.of("Europe/Paris")).toInstant();
+
 		events.forEach(event ->{
 			double lat = event.getLat();
 			double lng = event.getLng();
@@ -107,19 +97,6 @@ public class EventService {
 		
 		return null;
 	}
-
-	public Result addNewEvent(Event event, MultipartFile image) {
-		try {
-			event.setImage(new Binary(BsonBinarySubType.BINARY, image.getBytes()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		eventRepository.save(event);
-		if(event.getId() != null) 
-			return new Result("success", String.valueOf(event.getId()));
-		return new Result("failed","");
-	}
-	
 
 
 }

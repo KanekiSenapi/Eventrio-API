@@ -1,17 +1,17 @@
 package pl.aogiri.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import pl.aogiri.event.Event;
+
+import javax.persistence.*;
 import java.time.Instant;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-@Document
+@Entity
 public class User {
 	
 	@Id
-	private String id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 	
 	private String email;
 	
@@ -21,27 +21,31 @@ public class User {
 	
 	private String gender;
 	
-	@JsonFormat(pattern="yyyy-MM-dd")
-	private Instant birthday;
+	private String fbid;
 	
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "Europe/Warsaw")
+	private Instant birthday;
+
+	@OneToOne(mappedBy = "organizer")
+	private Event event;
+
 	public User() {
 	}
 
-	public User(String id, String email, String password, String pseudonym, String gender, Instant birthday) {
-		super();
-		this.id = id;
+	public User(String email, String password, String pseudonym, String gender, String fbid, Instant birthday) {
 		this.email = email;
 		this.password = password;
 		this.pseudonym = pseudonym;
 		this.gender = gender;
+		this.fbid = fbid;
 		this.birthday = birthday;
 	}
 
-	public String getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -84,7 +88,13 @@ public class User {
 	public void setBirthday(Instant birthday) {
 		this.birthday = birthday;
 	}
-	
-	
+
+	public String getFbid() {
+		return fbid;
+	}
+
+	public void setFbid(String fbid) {
+		this.fbid = fbid;
+	}
 
 }

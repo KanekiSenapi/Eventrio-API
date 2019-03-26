@@ -1,64 +1,56 @@
 package pl.aogiri.event;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import pl.aogiri.comment.Comment;
+import pl.aogiri.tag.Tag;
+import pl.aogiri.user.User;
+
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Set;
 
-import org.bson.BsonBinarySubType;
-import org.bson.types.Binary;
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-@Document
+@Entity
 public class Event {
-	
-	@Id
-	private String id;
-	
-	
-//	@NotNull
-	private String name;
-		
-//	@NotNull
-	private double lat;
-	
-//	@NotNull
-	private double lng;
-	
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "Europe/Warsaw")
-//	@NotNull
-	private Instant dateBeg;
-	
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "Europe/Warsaw")
-//	@NotNull
-	private Instant dateEnd;
-	
-//	@NotNull
-	private Binary image;
-	
-	private String address;
-	
-	private int status;
-	
-	public Event() {
-	}
 
-	public Event( String id,  String name,  double lat,  double lng,  Instant dateBeg,
-			Instant dateEnd,  Binary image, String address, int status) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.lat = lat;
-		this.lng = lng;
-		this.dateBeg = dateBeg;
-		this.dateEnd = dateEnd;
-		this.image = image;
-		this.address = address;
-		this.status = status;
-		this.image = image;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
+
+	private String name;
+
+	private double lat;
+
+	private double lng;
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Europe/Warsaw")
+	private Instant dateBeg;
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Europe/Warsaw")
+	private Instant dateEnd;
+
+	private String address;
+
+	private int status;
+
+	private String description;
+
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	private User organizer;
+
+	@ManyToMany
+	@JoinTable(
+			name = "eventToTag",
+			joinColumns = @JoinColumn(name = "event_id"),
+			inverseJoinColumns = @JoinColumn(name = "tag_id")
+	)
+	private Set<Tag> tags;
+
+	@OneToMany(mappedBy = "event")
+	private Set<Comment> comments;
+
+	public Event() {
 	}
 
 	public Event(Map<String, String> body) {
@@ -69,13 +61,28 @@ public class Event {
 		this.lng = (Double.valueOf(body.get("lng")));
 		this.address = (String.valueOf(body.get("address")));
 		this.status = (Integer.valueOf(body.get("status")));
+		this.description = (String.valueOf(body.get("description")));
 	}
 
-	public String getId() {
+	public Event(String name, double lat, double lng, Instant dateBeg, Instant dateEnd, String address, int status, String description, User organizer, Set<Tag> tags, Set<Comment> comments) {
+		this.name = name;
+		this.lat = lat;
+		this.lng = lng;
+		this.dateBeg = dateBeg;
+		this.dateEnd = dateEnd;
+		this.address = address;
+		this.status = status;
+		this.description = description;
+		this.organizer = organizer;
+		this.tags = tags;
+		this.comments = comments;
+	}
+
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -119,14 +126,6 @@ public class Event {
 		this.dateEnd = dateEnd;
 	}
 
-	public Binary getImage() {
-		return image;
-	}
-
-	public void setImage(Binary image) {
-		this.image = image;
-	}
-
 	public String getAddress() {
 		return address;
 	}
@@ -142,11 +141,36 @@ public class Event {
 	public void setStatus(int status) {
 		this.status = status;
 	}
-	
-	
-	
-	
-	
-	
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public User getOrganizer() {
+		return organizer;
+	}
+
+	public void setOrganizer(User organizer) {
+		this.organizer = organizer;
+	}
+
+	public Set<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(Set<Tag> tags) {
+		this.tags = tags;
+	}
+
+	public Set<Comment> getComments() {
+		return comments;
+	}
+
+	public void setComments(Set<Comment> comments) {
+		this.comments = comments;
+	}
 }
