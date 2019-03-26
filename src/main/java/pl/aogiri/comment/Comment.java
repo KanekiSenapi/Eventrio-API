@@ -11,8 +11,7 @@ import java.util.Set;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
-
+    private Integer id;
 
     private String content;
 
@@ -22,19 +21,24 @@ public class Comment {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
     public Comment() {
     }
 
-    public Comment(User user, String content, Instant date) {
+    public Comment(String content, Instant date, User user) {
         this.content = content;
         this.date = date;
+        this.user = user;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -54,4 +58,11 @@ public class Comment {
         this.date = date;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

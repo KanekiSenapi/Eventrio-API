@@ -43,7 +43,6 @@ public class UserController {
 
     @RequestMapping(path = "fb/create", method = RequestMethod.POST)
     @ResponseBody private User createUserByFb(@RequestBody UserFB userFB, HttpServletResponse response){
-        System.out.println(userFB.getPicture().toString());
         User user = userService.createUserByUserFB(userFB);
         if(user.getId()==null)
             response.setStatus(HttpServletResponse.SC_GONE);

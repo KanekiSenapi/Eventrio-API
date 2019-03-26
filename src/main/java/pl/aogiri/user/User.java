@@ -1,6 +1,7 @@
 package pl.aogiri.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import pl.aogiri.comment.Comment;
 import pl.aogiri.event.Event;
 
 import javax.persistence.*;
@@ -30,6 +31,9 @@ public class User {
 
 	@OneToOne(mappedBy = "organizer")
 	private Event event;
+
+	@OneToOne(mappedBy = "user")
+	private Comment comment;
 
 	public User() {
 	}
