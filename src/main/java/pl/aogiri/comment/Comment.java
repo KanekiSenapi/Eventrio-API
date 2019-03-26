@@ -5,7 +5,6 @@ import pl.aogiri.user.User;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.Set;
 
 @Entity
 public class Comment {
@@ -19,19 +18,19 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
+    private Event eventToComments;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    private User commentator;
 
     public Comment() {
     }
 
-    public Comment(String content, Instant date, User user) {
+    public Comment(String content, Instant date, User commentator) {
         this.content = content;
         this.date = date;
-        this.user = user;
+        this.commentator = commentator;
     }
 
     public Integer getId() {
@@ -58,11 +57,11 @@ public class Comment {
         this.date = date;
     }
 
-    public User getUser() {
-        return user;
+    public User getCommentator() {
+        return commentator;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setCommentator(User user) {
+        this.commentator = commentator;
     }
 }

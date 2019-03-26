@@ -8,6 +8,7 @@ import pl.aogiri.user.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,7 +49,8 @@ public class Event {
 	)
 	private Set<Tag> tags;
 
-	@OneToMany(mappedBy = "event")
+	@OneToMany(mappedBy = "eventToComments")
+	@OrderBy("date DESC")
 	private Set<Comment> comments;
 
 	public Event() {
@@ -174,4 +176,5 @@ public class Event {
 	public void setComments(Set<Comment> comments) {
 		this.comments = comments;
 	}
+
 }

@@ -32,7 +32,7 @@ public class User {
 	@OneToOne(mappedBy = "organizer")
 	private Event event;
 
-	@OneToOne(mappedBy = "user")
+	@OneToOne(mappedBy = "commentator")
 	private Comment comment;
 
 	public User() {
@@ -111,4 +111,6 @@ public class User {
 	public void setPicture(String picture) {
 		this.picture = picture;
 	}
+
+
 }
