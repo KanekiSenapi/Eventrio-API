@@ -22,6 +22,8 @@ public class User {
 	private String gender;
 	
 	private String fbid;
+
+	private String picture;
 	
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "Europe/Warsaw")
 	private Instant birthday;
@@ -32,13 +34,14 @@ public class User {
 	public User() {
 	}
 
-	public User(String email, String password, String pseudonym, String gender, String fbid, Instant birthday) {
+	public User(String email, String password, String pseudonym, String gender, String fbid,String picture, Instant birthday) {
 		this.email = email;
 		this.password = password;
 		this.pseudonym = pseudonym;
 		this.gender = gender;
 		this.fbid = fbid;
 		this.birthday = birthday;
+		this.picture = picture;
 	}
 
 	public Integer getId() {
@@ -97,4 +100,11 @@ public class User {
 		this.fbid = fbid;
 	}
 
+	public String getPicture() {
+		return picture;
+	}
+
+	public void setPicture(String picture) {
+		this.picture = picture;
+	}
 }
