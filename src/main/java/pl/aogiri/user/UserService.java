@@ -2,6 +2,9 @@ package pl.aogiri.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.aogiri.notifi.Notifi;
+import pl.aogiri.notifi.NotifiController;
+import pl.aogiri.notifi.NotifiService;
 
 import java.util.List;
 import java.util.Optional;

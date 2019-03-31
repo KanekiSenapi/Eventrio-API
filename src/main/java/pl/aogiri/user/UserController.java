@@ -51,7 +51,6 @@ public class UserController {
         else
             response.setStatus(HttpServletResponse.SC_CREATED);
         return user;
-
     }
 
 
