@@ -1,23 +1,17 @@
 package pl.aogiri.event;
 
-import java.io.IOException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import pl.aogiri.results.Result;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-
-import org.bson.BsonBinarySubType;
-import org.bson.types.Binary;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.synchronoss.cloud.nio.multipart.Multipart;
-
-import pl.aogiri.results.Result;
+import java.util.*;
 
 @Service
 public class EventService {
@@ -26,70 +20,41 @@ public class EventService {
 	EventRepository eventRepository;
 	
 	public List<Event> getAllEvents(){
-		return eventRepository.findAllByOrderByDateBeg();
+		List<Event> events = eventRepository.findAllByOrderByDateBeg();
+		events.forEach(x->x.minimal());
+		return events;
 	}
 
-	public Event getEventById(String id) {
+	public Event getEventById(Integer id) {
 		return eventRepository.findById(id).get();
 	}
 
-	public Result addNewEvent(Map<String,String> body, MultipartFile image) {
-		Event event = new Event(body);
+	public HttpStatus addNewEvent(Event body) {
 		try {
-			event.setImage(new Binary(BsonBinarySubType.BINARY, image.getBytes()));
-		} catch (IOException e) {
-			e.printStackTrace();
+			Event e = eventRepository.save(body);
+			if(e.getId() != null)
+				return HttpStatus.CREATED;
+		}catch (NoSuchElementException e){
+			return HttpStatus.CONFLICT;
 		}
-		eventRepository.save(event);
-		if(event.getId() != null) 
-			return new Result("success", String.valueOf(event.getId()));
-		return new Result("failed","");
+		return HttpStatus.CONFLICT;
 	}
 
-	public List<Event> getBoxEvents(double N, double E,double S, double W) {
+	public List<Event> getBoxEvents(double N, double S, double W, double E, String date) throws ParseException {
 		List<Event> events = this.getAllEvents();
 		List<Event> toR = new ArrayList<>();
+
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Instant date_check = simpleDateFormat.parse(date).toInstant();
 		events.forEach(event ->{
 			double lat = event.getLat();
 			double lng = event.getLng();
-			if(lat>S && lat<N && lng>W && lng<E)
+			Instant date_eventBeg = event.getDateBeg();
+			Instant date_eventEnd = event.getDateEnd();
+			if((lng>N && lng<S && lat>W && lat<E) & (date_eventBeg.isBefore(date_check) && date_eventEnd.isAfter(date_check)))
 				toR.add(event);
 		});
 		return toR;
-	}
-	
-	public List<Event> getBoxDateEvents(double n, double e, double s, double w, String datex) {
-		List<Event> events = this.getAllEvents();
-		List<Event> toR = new ArrayList<>();
-		Instant date = Instant.parse(datex);
-		events.forEach(event ->{
-			double lat = event.getLat();
-			double lng = event.getLng();
-			Instant date_beg = event.getDateBeg();
-			Instant date_end = event.getDateEnd();
-			
-			if(lat>s && lat<n && lng>w && lng<e && ((date_beg.isBefore(date) && date_end.isAfter(date)) || compareDates(date_beg,date) || compareDates(date_end,date)))
-				toR.add(event);
-		});
-		return toR;
-	}
-
-	public Object generateRandom() {
-//		double mina = 50.015348;
-//		double maxa = 50.109058;
-//		double minb = 19.817511;
-//		double maxb = 20.061383;
-//		long offset = Timestamp.valueOf("2018-09-07 00:00:00").getTime();
-//		long end = Timestamp.valueOf("2020-12-30 00:00:00").getTime();
-//		long diff = end - offset + 1;
-//		for (int n = 0; n < 100; n++) {
-//			Event event = new Event();
-//			event.setLat(mina + Math.random() * (maxa - mina));
-//			event.setLng(minb + Math.random() * (maxb - minb));
-//			event.setName("Test event #" + String.valueOf(n));
-////			eventRepository.save(event);
-//		}
-		return null;
 	}
 	
 	private boolean compareDates(Instant date1, Instant date2) {
@@ -107,19 +72,6 @@ public class EventService {
 		
 		return null;
 	}
-
-	public Result addNewEvent(Event event, MultipartFile image) {
-		try {
-			event.setImage(new Binary(BsonBinarySubType.BINARY, image.getBytes()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		eventRepository.save(event);
-		if(event.getId() != null) 
-			return new Result("success", String.valueOf(event.getId()));
-		return new Result("failed","");
-	}
-	
 
 
 }
